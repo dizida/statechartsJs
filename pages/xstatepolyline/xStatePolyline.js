@@ -20,7 +20,7 @@ let polyline // La polyline en cours de construction;
 
 const polylineMachine = createMachine(
     {
-        /** @xstate-layout N4IgpgJg5mDOIC5QAcD2AbAngGQJYDswA6XCdMAYgFkB5AVQGUBRAYWwEkWBpAbQAYAuohSpYuAC65U+YSAAeiAIxEAzAHY+AFgBMADjWbFKzbt0A2ADQhMiALR8imgKxnd2jXzNnFuvgE5zAF9AqzQsPEIiCAAnAEMAdwIoanpmNk5eQVk0MUlpWQUEZXUtPQMjE3MrGwR7Rxc3Dy8ffyCQkDCcAmIYhKSUxiZaADUmfiEkDtEJKRlJwuKNHX1DY1NLazsHZ1d3Pk9vXwCzYNCMLsjexPxkgCFYgGMAa1hkR7Bx7Om8udAF1SWZVWlQ2NTqO0a+2aRzaZ3C3SicWuySY+HEYGin0mORm+XmSgBpRWFXW1S29V2TUOrRO7U6ER6SP6TFgD1iyA+WWx31mBQJJWW5TWVU2tW2DT2Bxax2C7XwqAgcC+8MIX1yvPxtU0ZiIZm0ficakU2ic5icikUmjJtX0RDUEpUZlN2kUfiMpymKuIpHIatxv3kiE0KkJguBpNFumUfG02mM2h0fjUcdpcIujL6Nz9Pz5RVDQJJIpqLqcRCcsZUTicBpMBkNssCQA */
+        /** @xstate-layout N4IgpgJg5mDOIC5QAcD2AbAngGQJYDswA6XCdMAYgFkB5AVQGUBRAYWwEkWBpAbQAYAuohSpYuAC65U+YSAAeiALQBGAJwB2IgBYAHKtUBWHQDYth1afUAaEJiUBmPsaLL1xvuo3qATFuPr1LQBfIJs0LDxCIggAJwBDAHcCKGp6ZloANSZ+ISQQNDFJaVkFBG9vZSIDbx1vPj4de0a+b0MbOwR7NW1VLtUap3c+PxCwjBwCYljE5NTGVg5uHNkCiSkZPNKtAwMiPn7lFsbPdQNA9qVlX20jRsNjZSutYND88cip+KT8FKZ8cTAMWWeVWRQ2oFKym22mUBj4Z3s5Q89kRFwQjRc-i8CK06h0OlGbwik2iX1mTFgAGM4sgwMCRIV1iVEPYfEQdM9asY9OpHup7Fo0Y8qhytPtWQZ3F1+YTwhMotNvikAEJxSkAa1gyDVdMEK1Ea2Km0uxlURG8Blc7laWmUjVMaLFfCIxlubl5BgsjQMIVe+FQEDg+uJhH1jKNEKUvl2un0RlM5ksaMU9l62jch1N9klOlcLzGIeIpHIYcN4PkSnUztUrihpncRn2gtsiF2notymMxia+30+1l7xJiuSpbBzIQlVZwxqgWUAvxxjRFTb5WznoMukCZ19QSAA */
         id: "polyLine",
         initial: "idle",
         states : {
@@ -38,18 +38,14 @@ const polylineMachine = createMachine(
                     MOUSEMOVE: {
                         actions: "setLastPoint",
                     },
+
                     MOUSECLICK: [
                         {
                             guard: "pasPlein",
                             actions: "addPoint",
                         },
                     ],
-                    BACKSPACE: [
-                        {
-                            guard: "plusDeDeuxPoints",
-                            actions: "removeLastPoint",
-                        },
-                    ],
+
                     Enter: [
                         {
                             guard: "canSave",
@@ -57,10 +53,16 @@ const polylineMachine = createMachine(
                             actions: "saveLine",
                         },
                     ],
+
                     Escape: {
                         target: "idle",
                         actions: "abandon",
                     },
+
+                    Backspace: {
+                        actions: "removeLastPoint",
+                        guard: "plusDeDeuxPoints"
+                    }
                 },
             },
         },
@@ -138,7 +140,7 @@ const polylineMachine = createMachine(
             // On peut enregistrer la polyline
             canSave: (context, event) => {
             const pointCount = Math.floor(polyline.points().length / 2);
-            return pointCount >= 2 && pointCount <= MAX_POINTS;
+            return pointCount >= 2 && pointCount <= MAX_POINTS+1;
     },
         },
     }
